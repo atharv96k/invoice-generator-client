@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Lock files and config files
+bun.lock
+eslint.config.js
+vite.config.js
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,6 +27,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-bun.lock
-eslint.config.js
-vite.config.js
