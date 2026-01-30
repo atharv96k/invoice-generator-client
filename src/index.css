@@ -17,7 +17,7 @@
 .spin-animation{
   animation: spin 1s linear infinite;
 }
-
+.mainpage input:focus,
 .invoice-form input:focus,
 .invoice-form textarea:focus,
 .invoice-form select:focus{
