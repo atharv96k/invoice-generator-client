@@ -2,6 +2,7 @@ import { Pencil } from "lucide-react";
 import { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import InhvoiceForm from "../components/invoiceForm";
+import TemplateGrid from "../components/TemplateGrid";
 
 const MainPage = () => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -57,7 +58,7 @@ const MainPage = () => {
           {/* Template Grid */}
           <div className="col-12 col-lg-6 d-flex">
             <div className="bg-white border rounded shadow-sm p-4 w-100">
-              Template Grid
+              <TemplateGrid />
             </div>
           </div>
         </div>
