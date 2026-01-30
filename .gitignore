@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+bun.lock
+eslint.config.js
+vite.config.js
