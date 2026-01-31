@@ -24,12 +24,9 @@ export const AppContextProvider = (props) => {
 
   const contextValue = {
     baseURL,
-    invoiceData,
-    setInvoiceData,
-    invoiceTitle,
-    setInvoiceTitle,
-    selectedTemplate,
-    setSelectedTemplate,
+    invoiceData,setInvoiceData,
+    invoiceTitle,setInvoiceTitle,
+    selectedTemplate,setSelectedTemplate,
     initialInvoiceData,
   };
 

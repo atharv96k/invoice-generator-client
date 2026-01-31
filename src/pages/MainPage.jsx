@@ -56,7 +56,7 @@ const MainPage = () => {
           </div>
 
           {/* Template Grid */}
-          <div className="col-12 col-lg-6 d-flex">
+         <div className="col-12 col-lg-6 d-flex">
             <div className="bg-white border rounded shadow-sm p-4 w-100">
               <TemplateGrid />
             </div>
