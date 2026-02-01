@@ -6,20 +6,31 @@ import TemplateGrid from "../components/TemplateGrid";
 
 const MainPage = () => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const {invoiceTitle, setInvoiceTitle} = useContext(AppContext);
+  const { invoiceTitle, setInvoiceTitle, setInvoiceData,
+setSelectedTemplate, } =
+    useContext(AppContext);
+
+  const handleTemplateClick = (templateId => {
+    setSelectedTemplate(templateId);
+    console.log(templateId); 
+  });
 
   const handleTitleChange = (e) => {
-      const newTitle = e.target.value;
-      setInvoiceTitle(newTitle);
-  }
-  
+    const newTitle = e.target.value;
+    setInvoiceTitle(newTitle);
+    setInvoiceData((prev) => ({
+      ...prev,
+      title: newTitle,
+    }));
+  };
+
   const handleTitleEdit = () => {
-      setIsEditingTitle(true);
-  } 
+    setIsEditingTitle(true);
+  };
 
   const handleTitleBlur = () => {
-      setIsEditingTitle(false);
-  }
+    setIsEditingTitle(false);
+  };
 
   return (
     <div className="mainpage container-fluid bg-light min-vh-100 py-4">
@@ -28,22 +39,26 @@ const MainPage = () => {
         <div className="bg-white border rounded shadow-sm p-3 mb-4">
           <div className="d-flex align-items center">
             {isEditingTitle ? (
-                  <input type="text" 
-                  className="form-control me-2"
-                  autoFocus
-                  value={invoiceTitle}
-                  onChange={handleTitleChange}
-                  onBlur={handleTitleBlur}
-                  />
+              <input
+                type="text"
+                className="form-control me-2"
+                autoFocus
+                value={invoiceTitle}
+                onChange={handleTitleChange}
+                onBlur={handleTitleBlur}
+              />
             ) : (
               <>
-                 <h5 className="mb-0 me-2">{invoiceTitle}</h5>
-                  <button className="btn btn-sm p-0 border-0 bg-transparent" onClick={handleTitleEdit}>
-                    <Pencil className="text-primary" size={20}/> 
-                  </button> 
+                <h5 className="mb-0 me-2">{invoiceTitle}</h5>
+                <button
+                  className="btn btn-sm p-0 border-0 bg-transparent"
+                  onClick={handleTitleEdit}
+                >
+                  <Pencil className="text-primary" size={20} />
+                </button>
               </>
             )}
-            </div>
+          </div>
         </div>
 
         {/* Invoice Form & Template Grid*/}
@@ -56,9 +71,9 @@ const MainPage = () => {
           </div>
 
           {/* Template Grid */}
-         <div className="col-12 col-lg-6 d-flex">
+          <div className="col-12 col-lg-6 d-flex">
             <div className="bg-white border rounded shadow-sm p-4 w-100">
-              <TemplateGrid />
+              <TemplateGrid onTemplateClick={handleTemplateClick} />
             </div>
           </div>
         </div>
