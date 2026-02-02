@@ -81,11 +81,9 @@ const InhvoiceForm = () => {
         invoice: { ...prev.invoice, number: randomNumber },
       }));
     }
-  }, []);
+  }, [invoiceData.invoice.number, setInvoiceData]);
 
-  const handleSubmit = () => {
-    console.log(invoiceData);
-  }
+  
   return (
     <div className="invoiceform container py-4">
       {/* Company Logo */}
@@ -446,8 +444,7 @@ const InhvoiceForm = () => {
             }
           ></textarea>
         </div>
-      </div>
-      <button onClick={handleSubmit}></button>
+      </div> 
     </div>
   );
 };

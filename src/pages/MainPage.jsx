@@ -3,17 +3,24 @@ import { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import InhvoiceForm from "../components/invoiceForm";
 import TemplateGrid from "../components/TemplateGrid";
+import toast from "react-hot-toast";
 
 const MainPage = () => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const { invoiceTitle, setInvoiceTitle, setInvoiceData,
+  const { invoiceTitle,invoiceData, setInvoiceTitle, setInvoiceData,
 setSelectedTemplate, } =
     useContext(AppContext);
 
-  const handleTemplateClick = (templateId => {
-    setSelectedTemplate(templateId);
-    console.log(templateId); 
-  });
+  const handleTemplateClick = (templateId) => {
+    const hasInvalidItem=invoiceData.items.some(
+      (item) => !item.qty || !item.amount
+    );
+    if (hasInvalidItem) {
+      toast.error("Please enter quantity and amount for all items.");
+      return;
+    }
+    setSelectedTemplate(templateId); 
+  };
 
   const handleTitleChange = (e) => {
     const newTitle = e.target.value;
