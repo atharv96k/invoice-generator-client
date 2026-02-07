@@ -4,8 +4,10 @@ import { AppContext } from "../context/AppContext";
 import InhvoiceForm from "../components/invoiceForm";
 import TemplateGrid from "../components/TemplateGrid";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const MainPage = () => {
+   const navigate = useNavigate();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const { invoiceTitle,invoiceData, setInvoiceTitle, setInvoiceData,
 setSelectedTemplate, } =
@@ -20,6 +22,7 @@ setSelectedTemplate, } =
       return;
     }
     setSelectedTemplate(templateId); 
+    navigate("/preview");
   };
 
   const handleTitleChange = (e) => {
