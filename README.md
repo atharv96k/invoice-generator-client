@@ -1,16 +1,57 @@
-# React + Vite
+# QuickInvoice (invoice-generator-client)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + Vite front-end for creating invoices with live preview and multiple templates.
 
-Currently, two official plugins are available:
+**Current Status (as of Feb 7, 2026)**  
+Landing page, invoice form, template gallery, and preview page are built. Core invoice data is managed via React Context and can be previewed across templates. Several buttons and backend actions are placeholders.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Tech Stack**
+- React 19 + Vite
+- React Router
+- Bootstrap 5
+- Context API for shared state
+- Lucide icons, React Hot Toast
 
-## React Compiler
+**Pages & Routes**
+- `/` Landing page with marketing sections and CTA buttons.
+- `/dashboard` Placeholder dashboard view.
+- `/generate` Main invoice creation page.
+- `/preview` Invoice preview with template switcher and action buttons.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**What Works Now**
+- Invoice form for company, billing, shipping, items, tax, notes, and bank details.
+- Dynamic item rows with quantity/amount totals and overall tax/grand total.
+- Random invoice number generation on first load.
+- Logo upload and preview.
+- Template gallery and template selection.
+- Live invoice preview for selected template.
 
-## Expanding the ESLint configuration
+**Templates**
+- 5 template thumbnails are available in the gallery.
+- Template rendering is wired through `templateComponents` in `src/utils/invoiceTemplates.js`.
+- `Template1` and `Template2` are implemented; the others exist as folders and are wired for future work.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**State & Data Flow**
+- Global state lives in `src/context/AppContext.jsx`.
+- `invoiceData`, `invoiceTitle`, and `selectedTemplate` are shared across pages.
+- Data is formatted for templates by `src/utils/formatInvoiceData.js`.
+
+**Not Wired Yet (Placeholders)**
+- Save, Delete, Send Email, Download PDF actions on `/preview`.
+- Dashboard features.
+- Authentication via Clerk is referenced but currently commented out.
+- Backend API calls (base URL is set to `http://localhost:8080/api`).
+
+**Scripts**
+- `npm run dev` Start dev server
+- `npm run build` Build for production
+- `npm run preview` Preview production build
+- `npm run lint` Run ESLint
+
+**Local Setup**
+1. Install dependencies: `npm install`
+2. Start dev server: `npm run dev`
+3. Open the app at the Vite local URL.
+
+ 
+ 
