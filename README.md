@@ -1,57 +1,75 @@
-# QuickInvoice (invoice-generator-client)
+# QuickInvoice
 
-A React + Vite front-end for creating invoices with live preview and multiple templates.
+QuickInvoice is a professional, full-stack React application designed to streamline the invoicing process for freelancers and small businesses. It allows users to effortlessly generate, preview, and manage invoices using a variety of professionally designed templates.
 
-**Current Status (as of Feb 7, 2026)**  
-Landing page, invoice form, template gallery, and preview page are built. Core invoice data is managed via React Context and can be previewed across templates. Several buttons and backend actions are placeholders.
+## 🚀 Features
 
-**Tech Stack**
-- React 19 + Vite
-- React Router
-- Bootstrap 5
-- Context API for shared state
-- Lucide icons, React Hot Toast
+* **Live Invoice Generation**: Dynamic form to input company details, billing/shipping information, and line items with real-time total calculations.
+* **Multiple Professional Templates**: Choose from 5 distinct invoice designs to match your brand.
+* **Automatic Data Formatting**: Sophisticated data mapping ensuring consistent display across different template structures.
+* **Logo Support**: Custom company logo upload with instant preview.
+* **Smart Automation**: Automatic generation of unique invoice numbers (e.g., `INV-123456`).
+* **Visual Previews**: High-fidelity live previews of the final invoice before saving.
+* **Cloud Integration**: Saves invoice thumbnails to Cloudinary for easy reference in the dashboard.
 
-**Pages & Routes**
-- `/` Landing page with marketing sections and CTA buttons.
-- `/dashboard` Placeholder dashboard view.
-- `/generate` Main invoice creation page.
-- `/preview` Invoice preview with template switcher and action buttons.
+## 🛠️ Tech Stack
 
-**What Works Now**
-- Invoice form for company, billing, shipping, items, tax, notes, and bank details.
-- Dynamic item rows with quantity/amount totals and overall tax/grand total.
-- Random invoice number generation on first load.
-- Logo upload and preview.
-- Template gallery and template selection.
-- Live invoice preview for selected template.
+* **Frontend**: React 19, Vite.
+* **Styling**: Bootstrap 5, Custom CSS, Lucide React (Icons).
+* **State Management**: React Context API.
+* **Routing**: React Router 7.
+* **Utilities**: Axios (API calls), Html2canvas (Thumbnails), React Hot Toast (Notifications).
+* **Backend Support**: Ready for Spring Boot integration (Default: `http://localhost:8080/api`).
 
-**Templates**
-- 5 template thumbnails are available in the gallery.
-- Template rendering is wired through `templateComponents` in `src/utils/invoiceTemplates.js`.
-- `Template1` and `Template2` are implemented; the others exist as folders and are wired for future work.
+## 📁 Project Structure
 
-**State & Data Flow**
-- Global state lives in `src/context/AppContext.jsx`.
-- `invoiceData`, `invoiceTitle`, and `selectedTemplate` are shared across pages.
-- Data is formatted for templates by `src/utils/formatInvoiceData.js`.
+```text
+src/
+├── assets/             # Images and static asset configuration
+├── components/         # Reusable UI components (Form, Menubar, Logo, etc.)
+├── context/            # Global state management via AppContext
+├── pages/              # Main route components (Landing, MainPage, Preview)
+├── service/            # API services for Invoice and Cloudinary
+├── templates/          # Distinct invoice template components (1-5)
+└── utils/              # Formatting and template mapping logic
 
-**Not Wired Yet (Placeholders)**
-- Save, Delete, Send Email, Download PDF actions on `/preview`.
-- Dashboard features.
-- Authentication via Clerk is referenced but currently commented out.
-- Backend API calls (base URL is set to `http://localhost:8080/api`).
+```
 
-**Scripts**
-- `npm run dev` Start dev server
-- `npm run build` Build for production
-- `npm run preview` Preview production build
-- `npm run lint` Run ESLint
+## 🚥 Getting Started
 
-**Local Setup**
-1. Install dependencies: `npm install`
-2. Start dev server: `npm run dev`
-3. Open the app at the Vite local URL.
+### Prerequisites
 
- 
- 
+* Node.js installed on your machine.
+* A backend server running at `http://localhost:8080` (optional for frontend-only testing).
+
+### Installation
+
+1. Clone the repository.
+2. Install dependencies:
+```bash
+npm install
+
+```
+
+
+3. Start the development server:
+```bash
+npm run dev
+
+```
+
+
+
+## 📝 Available Scripts
+
+* `npm run dev`: Starts the Vite development server.
+* `npm run build`: Compiles the application for production.
+* `npm run lint`: Checks for code quality issues using ESLint.
+* `npm run preview`: Locally previews the production build.
+
+## 🗺️ Roadmap
+
+* [ ] Full Dashboard integration to view saved invoices.
+* [ ] PDF download functionality using `jspdf`.
+* [ ] Direct "Send via Email" action.
+* [ ] Authentication implementation via Clerk.
