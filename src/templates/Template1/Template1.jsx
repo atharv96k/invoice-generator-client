@@ -74,7 +74,7 @@ const Template1 = ({ data }) => {
           <table className="table table-bordered">
             <thead>
               <tr>
-                <th className="p-2 table-header">Item #/Item description</th>
+                <th className="p-2 table-header">Item</th>
                 <th className="p-2 text-center table-header">Qty.</th>
                 <th className="p-2 text-end table-header">Rate</th>
                 <th className="p-2 text-end table-header">Amount</th>

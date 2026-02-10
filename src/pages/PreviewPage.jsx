@@ -5,15 +5,17 @@ import InvoicePreview from "../components/invoicePreview";
 import { deleteInvoice, saveInvoice } from "../service/invoiceService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { Loader, Loader2 } from "lucide-react";
 import html2canvas from "html2canvas";
 import { uploadInvoiceThumbnail } from "../service/cloudinaryService";
+import { generatePdfFromElement } from "../utils/pdfUtils";
 
 const PreviewPage = () => {
   const previewRef = useRef();
   const { invoiceData, selectedTemplate, setSelectedTemplate, baseURL } =
     useContext(AppContext);
   const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -76,6 +78,21 @@ const handleDelete = async() => {
   }
 }
 
+const handleDownloadPdf = async() => {
+  if (!previewRef.current) {
+    return;
+  }
+  try {
+    setDownloading(true);
+    await generatePdfFromElement(previewRef.current, `invoice_${Date.now()}.pdf`);
+  } catch (error) {
+    toast.error("Failed to generate invoice",error.message);
+  }finally{
+    setDownloading(false);
+  }
+}
+
+
   return (
     <div
       className="container-fluid d-flex flex-column p-3"
@@ -111,8 +128,11 @@ const handleDelete = async() => {
           <button className="btn btn-danger" onClick={handleDelete}>Delete Invoice</button>
           <button className="btn btn-secondary">Back to Dashboard</button>
           <button className="btn btn-info">Send Email</button>
-          <button className="btn btn-success d-flex align-items-center justify-content-center">
-            Download PDF
+          <button className="btn btn-success d-flex align-items-center justify-content-center" disabled={loading} onClick={handleDownloadPdf}>
+            {downloading && (
+              <Loader className="me-2 spin-animation" size={18}/>
+            )}
+            {downloading ? "Downloading...":"Download PDF"}
           </button>
         </div>
       </div>
