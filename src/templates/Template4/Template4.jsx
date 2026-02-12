@@ -58,7 +58,7 @@ const Template4 = ({ data }) => {
                 <table className="table table-bordered mb-0">
                     <thead className="template4-table-head text-white">
                     <tr>
-                        <th className="p-3 template4-table-head">Item #/Item description</th>
+                        <th className="p-3 template4-table-head">Item</th>
                         <th className="p-3 text-center template4-table-head">Quantity</th>
                         <th className="p-3 text-center template4-table-head">Rate</th>
                         <th className="p-3 text-end template4-table-head">Amount</th>
