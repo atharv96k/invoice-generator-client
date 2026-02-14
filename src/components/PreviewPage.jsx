@@ -1,25 +1,34 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import InvoicePreview from "./InvoicePreview";
+import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 import { AppContext } from "../context/AppContext";
 import { templates } from "../assets/assets";
-import InvoicePreview from "../components/invoicePreview";
-import { deleteInvoice, saveInvoice, sendInvoice } from "../service/invoiceService";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import { Loader, Loader2 } from "lucide-react";
-import html2canvas from "html2canvas";
-import { uploadInvoiceThumbnail } from "../service/cloudinaryService";
 import { generatePdfFromElement } from "../utils/pdfUtils";
+import { uploadInvoiceThumbnail } from "../service/cloudinaryService";
+import {
+  deleteInvoice,
+  saveInvoice,
+  sendInvoice,
+} from "../service/invoiceService";
+import html2canvas from "html2canvas";
+import { useAuth, useUser } from "@clerk/clerk-react";
 
 const PreviewPage = () => {
-  const previewRef = useRef();
   const { invoiceData, selectedTemplate, setSelectedTemplate, baseURL } =
     useContext(AppContext);
+  const { user } = useUser();
+
+  const { getToken } = useAuth();
+
+  const navigate = useNavigate();
+  const previewRef = useRef();
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [customerEmail, setCustomerEmail] = useState("");
-  const [emailing, setEmailing]=useState(false);
-  const navigate = useNavigate();
+  const [emailing, setEmailing] = useState(false);
 
   useEffect(() => {
     if (!invoiceData || !invoiceData.items?.length) {
@@ -28,7 +37,26 @@ const PreviewPage = () => {
     }
   }, [invoiceData, navigate]);
 
+  const handleDownloadPdf = async () => {
+    if (!previewRef.current) return;
+
+    try {
+      setDownloading(true);
+      await generatePdfFromElement(
+        previewRef.current,
+        `invoice_${Date.now()}.pdf`
+      );
+    } catch (error) {
+      toast.error("Failed to download PDF.");
+      console.error(error);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const handleSaveAndExit = async () => {
+    if (!previewRef.current) return toast.error("Preview not available");
+
     try {
       setLoading(true);
 
@@ -41,59 +69,45 @@ const PreviewPage = () => {
 
       const imageData = canvas.toDataURL("image/png");
       const thumbnailUrl = await uploadInvoiceThumbnail(imageData);
+
       const payload = {
         ...invoiceData,
+        clerkId: user.id,
         thumbnailUrl,
         template: selectedTemplate,
       };
-      const response = await saveInvoice(baseURL, payload);
-      if (response.status == 200) {
+      const token = await getToken();
+      const response = await saveInvoice(baseURL, payload, token);
+
+      if (response.status === 200) {
         toast.success("Invoice saved successfully!");
         navigate("/dashboard");
       } else {
-        toast.error("Something went wrong!");
+        throw new Error("Save failed");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed To save invoice ", error.message);
+      toast.error("Failed to save invoice");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!invoiceData.id) {
-      toast.success("Invoice deleted successfully.");
-      navigate("/dashboard");
-    }
+    if (!invoiceData.id) return toast.error("No invoice ID found.");
 
     try {
-      const response = await deleteInvoice(baseURL, invoiceData.id);
-      if (response.status == 204) {
-        toast.success("Invoice deleted successfully.");
+      const token = await getToken();
+      const res = await deleteInvoice(baseURL, invoiceData.id, token);
+      if (res.status === 204) {
+        toast.success("Invoice deleted.");
         navigate("/dashboard");
       } else {
         toast.error("Unable to delete invoice.");
       }
-    } catch (error) {
-      toast.error("Failed to delete invoice", error.message);
-    }
-  };
-
-  const handleDownloadPdf = async () => {
-    if (!previewRef.current) {
-      return;
-    }
-    try {
-      setDownloading(true);
-      await generatePdfFromElement(
-        previewRef.current,
-        `invoice_${Date.now()}.pdf`,
-      );
-    } catch (error) {
-      toast.error("Failed to generate invoice", error.message);
-    } finally {
-      setDownloading(false);
+    } catch (err) {
+      toast.error("Delete failed.");
+      console.error(err);
     }
   };
 
@@ -101,27 +115,40 @@ const PreviewPage = () => {
     if (!previewRef.current || !customerEmail) {
       return toast.error("Please enter a valid email and try again.");
     }
-     try {
-        setEmailing(true);
-        const pdfBlob =await generatePdfFromElement(previewRef.current, `invoice_${Date.now()}.pdf`,true);
-        const formData = new FormData();
-        formData.append("file", pdfBlob);
-        formData.append("email", customerEmail);
 
-        const response=await sendInvoice(baseURL, formData);
-        if (response.status == 200) {
-          toast.success("Email sent successfully.");
-          setShowModal(false);
-          setCustomerEmail("");          
-        }else{
-          toast.error("Failed to send email.");
-        }
-      }catch(error){
-        toast.error("Failed to send email.", error.message);
-      }finally{
-        setEmailing(false);
+    try {
+      setEmailing(true);
+
+      // Generate the PDF blob
+      const pdfBlob = await generatePdfFromElement(
+        previewRef.current,
+        `invoice_${Date.now()}.pdf`,
+        true
+      ); // add `returnBlob=true` in your utils
+
+      const formData = new FormData();
+      formData.append("file", pdfBlob, `invoice_${Date.now()}.pdf`);
+      formData.append("email", customerEmail);
+
+      const token = await getToken();
+
+      const response = await sendInvoice(baseURL, token, formData);
+
+      if (response.status === 200) {
+        toast.success("Email sent successfully!");
+        setShowModal(false);
+        setCustomerEmail("");
+      } else {
+        toast.error("Failed to send email.");
       }
-  }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong while sending email.");
+    } finally {
+      setEmailing(false);
+    }
+  };
+
   return (
     <div
       className="container-fluid d-flex flex-column p-3"
@@ -152,27 +179,30 @@ const PreviewPage = () => {
             disabled={loading}
           >
             {loading && <Loader2 className="me-2 spin-animation" size={18} />}
-            {loading ? "Saving..." : "Save And Exit"}
+            {loading ? "Saving..." : "Save and Exit"}
           </button>
           <button className="btn btn-danger" onClick={handleDelete}>
-            Delete Invoice
+            Delete invoice
           </button>
-          <button className="btn btn-secondary">Back to Dashboard</button>
+          <button className="btn btn-secondary" onClick={() => navigate("/")}>
+            Back to Dashboard
+          </button>
           <button className="btn btn-info" onClick={() => setShowModal(true)}>
             Send Email
           </button>
           <button
             className="btn btn-success d-flex align-items-center justify-content-center"
-            disabled={loading}
             onClick={handleDownloadPdf}
+            disabled={downloading}
           >
             {downloading && (
-              <Loader className="me-2 spin-animation" size={18} />
+              <Loader2 className="me-2 spin-animation" size={18} />
             )}
             {downloading ? "Downloading..." : "Download PDF"}
           </button>
         </div>
       </div>
+
       <div className="flex-grow-1 overflow-auto d-flex justify-content-center align-items-start bg-light py-3">
         <div
           ref={previewRef}
@@ -192,13 +222,12 @@ const PreviewPage = () => {
           />
         </div>
       </div>
-
       {showModal && (
         <div
           className="modal d-block"
           tabIndex="-1"
           role="dialog"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
         >
           <div className="modal-dialog" role="document">
             <div className="modal-content">
@@ -213,16 +242,20 @@ const PreviewPage = () => {
               <div className="modal-body">
                 <input
                   type="email"
-                  name=""
-                  id=""
                   className="form-control"
                   placeholder="Customer Email"
-                  onChange={(e) => setCustomerEmail(e.target.value)} value={customerEmail}
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
                 />
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-primary" onClick={handleSendEmail} disabled={emailing}>
-                  {emailing?"Sending...":"Send"}
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleSendEmail}
+                  disabled={emailing}
+                >
+                  {emailing ? "Sending..." : "Send"}
                 </button>
                 <button
                   type="button"
@@ -239,4 +272,5 @@ const PreviewPage = () => {
     </div>
   );
 };
+
 export default PreviewPage;

@@ -1,37 +1,14 @@
-import { Trash } from "lucide-react";
-import { assets } from "../assets/assets";
+import { Trash2 } from "lucide-react";
+import { assets } from "../assets/assets.js";
 import { useContext, useEffect } from "react";
-import { AppContext } from "../context/AppContext";
+import { AppContext } from "../context/AppContext.jsx";
 
-const InhvoiceForm = () => {
+const InvoiceForm = () => {
   const { invoiceData, setInvoiceData } = useContext(AppContext);
-
-  const addItem = () => {
-    setInvoiceData((prev) => ({
-      ...prev,
-      items: [
-        ...prev.items,
-        { name: "", qty: "", amount: "", description: "", total: "" },
-      ],
-    }));
-  };
-
-  const deleteItems = (index) => {
-    const items = invoiceData.items.filter((_, i) => i != index);
-    setInvoiceData((prev) => ({ ...prev, items }));
-  };
-
   const handleChange = (section, field, value) => {
     setInvoiceData((prev) => ({
       ...prev,
       [section]: { ...prev[section], [field]: value },
-    }));
-  };
-
-  const handleSameAsBilling = () => {
-    setInvoiceData((prev) => ({
-      ...prev,
-      shipping: { ...prev.billing },
     }));
   };
 
@@ -44,20 +21,41 @@ const InhvoiceForm = () => {
     setInvoiceData((prev) => ({ ...prev, items }));
   };
 
-  //For Tax
+  const addItem = () => {
+    setInvoiceData((prev) => ({
+      ...prev,
+      items: [
+        ...prev.items,
+        { name: "", qty: 1, amount: 0, total: 0, description: "" },
+      ],
+    }));
+  };
+
+  const deleteItem = (index) => {
+    const items = invoiceData.items.filter((_, i) => i !== index);
+    setInvoiceData((prev) => ({ ...prev, items }));
+  };
+
+  const handleSameAsBilling = () => {
+    setInvoiceData((prev) => ({
+      ...prev,
+      shipping: { ...prev.billing },
+    }));
+  };
+
   const calculateTotals = () => {
-    const subTotal = invoiceData.items.reduce(
+    const subtotal = invoiceData.items.reduce(
       (sum, item) => sum + (item.total || 0),
-      0,
+      0
     );
     const taxRate = Number(invoiceData.tax || 0);
-    const taxAmount = (subTotal * taxRate) / 100;
-    const grandTotal = subTotal + taxAmount;
-    return { subTotal, taxRate, taxAmount, grandTotal };
+    const taxAmount = (subtotal * taxRate) / 100;
+    const grandTotal = subtotal + taxAmount;
+    return { subtotal, taxAmount, grandTotal };
   };
-  const { subTotal, taxAmount, grandTotal } = calculateTotals();
 
-  //Handles Logo Upload
+  const { subtotal, taxAmount, grandTotal } = calculateTotals();
+
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -65,15 +63,15 @@ const InhvoiceForm = () => {
       reader.onloadend = () => {
         setInvoiceData((prev) => ({
           ...prev,
-          logo: reader.result,
+          logo: reader.result, // base64 string
         }));
       };
       reader.readAsDataURL(file);
     }
   };
 
-  //For Generating Random Invoice Number
   useEffect(() => {
+    // Only generate if it's not already set (for example, editing an existing invoice)
     if (!invoiceData.invoice.number) {
       const randomNumber = `INV-${Math.floor(100000 + Math.random() * 900000)}`;
       setInvoiceData((prev) => ({
@@ -81,35 +79,33 @@ const InhvoiceForm = () => {
         invoice: { ...prev.invoice, number: randomNumber },
       }));
     }
-  }, [invoiceData.invoice.number, setInvoiceData]);
+  }, []);
 
-  
   return (
     <div className="invoiceform container py-4">
-      {/* Company Logo */}
+      {/* COMPANY LOGO */}
       <div className="mb-4">
         <h5>Company Logo</h5>
         <div className="d-flex align-items-center gap-3">
           <label htmlFor="image" className="form-label">
             <img
               src={invoiceData.logo ? invoiceData.logo : assets.upload_area}
-              alt="upload"
+              alt=""
               width={98}
             />
           </label>
           <input
             type="file"
+            className="form-control"
             name="logo"
             id="image"
             hidden
-            className="form-control"
             accept="image/*"
             onChange={handleLogoUpload}
           />
         </div>
       </div>
-
-      {/* Company info  */}
+      {/* COMPANY INFO */}
       <div className="mb-4">
         <h5>Your Company</h5>
         <div className="row g-3">
@@ -118,8 +114,8 @@ const InhvoiceForm = () => {
               type="text"
               className="form-control"
               placeholder="Company Name"
-              onChange={(e) => handleChange("company", "name", e.target.value)}
               value={invoiceData.company.name}
+              onChange={(e) => handleChange("company", "name", e.target.value)}
             />
           </div>
           <div className="col-md-6">
@@ -127,27 +123,27 @@ const InhvoiceForm = () => {
               type="text"
               className="form-control"
               placeholder="Company Phone"
-              onChange={(e) => handleChange("company", "phone", e.target.value)}
               value={invoiceData.company.phone}
+              onChange={(e) => handleChange("company", "phone", e.target.value)}
             />
           </div>
-          <div className="col-md-12">
+          <div className="col-12">
             <input
               type="text"
               className="form-control"
               placeholder="Company Address"
+              value={invoiceData.company.address}
               onChange={(e) =>
                 handleChange("company", "address", e.target.value)
               }
-              value={invoiceData.company.address}
             />
           </div>
         </div>
       </div>
 
-      {/* Bill To */}
+      {/* BILL TO */}
       <div className="mb-4">
-        <h5>Bill To </h5>
+        <h5>Bill To</h5>
         <div className="row g-3">
           <div className="col-md-6">
             <input
@@ -162,12 +158,12 @@ const InhvoiceForm = () => {
             <input
               type="text"
               className="form-control"
-              placeholder="Phone Number"
+              placeholder="Phone"
               value={invoiceData.billing.phone}
               onChange={(e) => handleChange("billing", "phone", e.target.value)}
             />
           </div>
-          <div className="col-md-12">
+          <div className="col-12">
             <input
               type="text"
               className="form-control"
@@ -181,10 +177,10 @@ const InhvoiceForm = () => {
         </div>
       </div>
 
-      {/* Ship To */}
+      {/* SHIP TO */}
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center mb-2">
-          <h5>Ship To </h5>
+          <h5>Ship To</h5>
           <div className="form-check">
             <input
               type="checkbox"
@@ -192,8 +188,8 @@ const InhvoiceForm = () => {
               id="sameAsBilling"
               onChange={handleSameAsBilling}
             />
-            <label htmlFor="sameAsBilling" className="form-check-label">
-              Same as Billing Address
+            <label className="form-check-label" htmlFor="sameAsBilling">
+              Same as Bill To
             </label>
           </div>
         </div>
@@ -211,18 +207,18 @@ const InhvoiceForm = () => {
             <input
               type="text"
               className="form-control"
-              placeholder="Phone Number"
+              placeholder="Phone"
               value={invoiceData.shipping.phone}
               onChange={(e) =>
                 handleChange("shipping", "phone", e.target.value)
               }
             />
           </div>
-          <div className="col-md-12">
+          <div className="col-12">
             <input
               type="text"
               className="form-control"
-              placeholder="Shipping Address"
+              placeholder="Address"
               value={invoiceData.shipping.address}
               onChange={(e) =>
                 handleChange("shipping", "address", e.target.value)
@@ -232,19 +228,16 @@ const InhvoiceForm = () => {
         </div>
       </div>
 
-      {/* Invoice info */}
+      {/* INVOICE INFO */}
       <div className="mb-4">
         <h5>Invoice Information</h5>
         <div className="row g-3">
           <div className="col-md-4">
-            <label htmlFor="invoiceNumber" className="form-label">
-              Invoice Number
-            </label>
+            <label className="form-label">Invoice Number</label>
             <input
+              disabled
               type="text"
               className="form-control"
-              disabled
-              id="invoiceNumber"
               value={invoiceData.invoice.number}
               onChange={(e) =>
                 handleChange("invoice", "number", e.target.value)
@@ -252,25 +245,21 @@ const InhvoiceForm = () => {
             />
           </div>
           <div className="col-md-4">
-            <label htmlFor="invoiceDate" className="form-label">
-              Invoice Date
-            </label>
+            <label className="form-label">Invoice Date</label>
             <input
               type="date"
               className="form-control"
-              id="inoviceDate"
+              placeholder="Invoice Date"
               value={invoiceData.invoice.date}
               onChange={(e) => handleChange("invoice", "date", e.target.value)}
             />
           </div>
           <div className="col-md-4">
-            <label htmlFor="invoiceDueDate" className="form-label">
-              Invoice Due Date
-            </label>
+            <label className="form-label">Invoice Due Date</label>
             <input
               type="date"
               className="form-control"
-              id="invoiceDueDate"
+              placeholder="Due Date"
               value={invoiceData.invoice.dueDate}
               onChange={(e) =>
                 handleChange("invoice", "dueDate", e.target.value)
@@ -280,7 +269,7 @@ const InhvoiceForm = () => {
         </div>
       </div>
 
-      {/* Item Details */}
+      {/* ITEM DETAILS */}
       <div className="mb-4">
         <h5>Item Details</h5>
         {invoiceData.items.map((item, index) => (
@@ -304,7 +293,7 @@ const InhvoiceForm = () => {
                   placeholder="Qty"
                   value={item.qty}
                   onChange={(e) =>
-                    handleItemChange(index, "qty", e.target.value)
+                    handleItemChange(index, "qty", Number(e.target.value))
                   }
                 />
               </div>
@@ -315,7 +304,7 @@ const InhvoiceForm = () => {
                   placeholder="Amount"
                   value={item.amount}
                   onChange={(e) =>
-                    handleItemChange(index, "amount", e.target.value)
+                    handleItemChange(index, "amount", Number(e.target.value))
                   }
                 />
               </div>
@@ -325,7 +314,7 @@ const InhvoiceForm = () => {
                   className="form-control bg-light"
                   placeholder="Total"
                   value={item.total}
-                  disabled
+                  readOnly
                 />
               </div>
             </div>
@@ -338,14 +327,13 @@ const InhvoiceForm = () => {
                   handleItemChange(index, "description", e.target.value)
                 }
               />
-
               {invoiceData.items.length > 1 && (
                 <button
                   type="button"
                   className="btn btn-outline-danger"
-                  onClick={() => deleteItems(index)}
+                  onClick={() => deleteItem(index)}
                 >
-                  <Trash size={18} />
+                  <Trash2 size={18} />
                 </button>
               )}
             </div>
@@ -356,15 +344,15 @@ const InhvoiceForm = () => {
         </button>
       </div>
 
-      {/* Bank Account Details */}
+      {/* Account info */}
       <div className="mb-4">
         <h5>Bank Account Details</h5>
         <div className="row g-3">
           <div className="col-md-4">
             <input
               type="text"
-              className="form-control"
               placeholder="Account Name"
+              className="form-control"
               value={invoiceData.account.name}
               onChange={(e) => handleChange("account", "name", e.target.value)}
             />
@@ -373,7 +361,7 @@ const InhvoiceForm = () => {
             <input
               type="text"
               className="form-control"
-              placeholder="Account Number"
+              placeholder="Account number"
               value={invoiceData.account.number}
               onChange={(e) =>
                 handleChange("account", "number", e.target.value)
@@ -394,24 +382,23 @@ const InhvoiceForm = () => {
         </div>
       </div>
 
-      {/* Totals */}
+      {/* TOTALS */}
       <div className="mb-4">
         <h5>Totals</h5>
         <div className="d-flex justify-content-end">
           <div className="w-100 w-md-50">
             <div className="d-flex justify-content-between">
               <span>Subtotal</span>
-              <span>₹{subTotal.toFixed(2)}</span>
+              <span>₹{subtotal.toFixed(2)}</span>
             </div>
             <div className="d-flex justify-content-between align-items-center my-2">
               <label htmlFor="taxInput" className="me-2">
-                Tax Rate(%)
+                Tax Rate (%)
               </label>
               <input
-                type="number"
                 id="taxInput"
+                type="number"
                 className="form-control w-50 text-end"
-                placeholder=""
                 value={invoiceData.tax}
                 onChange={(e) =>
                   setInvoiceData((prev) => ({ ...prev, tax: e.target.value }))
@@ -430,23 +417,23 @@ const InhvoiceForm = () => {
         </div>
       </div>
 
-      {/* Notes */}
+      {/* NOTES */}
       <div className="mb-4">
         <h5>Notes:</h5>
         <div className="w-100">
           <textarea
             name="notes"
+            rows="3"
             className="form-control"
-            rows={3}
             value={invoiceData.notes}
             onChange={(e) =>
               setInvoiceData((prev) => ({ ...prev, notes: e.target.value }))
             }
           ></textarea>
         </div>
-      </div> 
+      </div>
     </div>
   );
 };
 
-export default InhvoiceForm;
+export default InvoiceForm;

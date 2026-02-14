@@ -1,16 +1,16 @@
 import Logo from "../../components/Logo.jsx";
-// import {useContext} from "react";
+import {useContext} from "react";
 import './LandingPage.css';
-// import {useClerk, useUser} from "@clerk/clerk-react";
-// import {useNavigate} from "react-router-dom";
-// import {AppContext, initialInvoiceData} from "../../context/AppContext.jsx";
+import {useClerk, useUser} from "@clerk/clerk-react";
+import {useNavigate} from "react-router-dom";
+import {AppContext, initialInvoiceData} from "../../context/AppContext.jsx";
 import {assets} from "../../assets/assets.js";
 
 const LandingPage = () => {
-    // const {user} = useUser();
-    // const navigate = useNavigate();
-    // const {openSignIn} = useClerk();
-    // const {setInvoiceData, setSelectedTemplate, setInvoiceTitle} = useContext(AppContext);
+    const {user} = useUser();
+    const navigate = useNavigate();
+    const {openSignIn} = useClerk();
+    const {setInvoiceData, setSelectedTemplate, setInvoiceTitle} = useContext(AppContext);
     // useEffect(() => {
     //     // Get all elements with data-bs-toggle="tooltip"
     //     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -24,16 +24,16 @@ const LandingPage = () => {
     //     });
     // }, []); // Empty dependency array means this effect runs only once on mount
 
-    // const handleActionButton = () => {
-    //     if (user) {
-    //         setInvoiceData(initialInvoiceData);
-    //         setSelectedTemplate("template1");
-    //         setInvoiceTitle("Create Invoice");
-    //         navigate("/generate");
-    //     } else {
-    //         openSignIn({});
-    //     }
-    // }
+    const handleActionButton = () => {
+        if (user) {
+            setInvoiceData(initialInvoiceData);
+            setSelectedTemplate("template1");
+            setInvoiceTitle("Create Invoice");
+            navigate("/generate");
+        } else {
+            openSignIn({});
+        }
+    }
 
     return (
         <>
@@ -46,11 +46,11 @@ const LandingPage = () => {
                                 Effortless Invoicing. Professional Results.
                             </h1>
                             <p className="lead mb-5" style={{ fontSize: '1.3rem' }}>
-                                Stop wrestling with spreadsheets. QuickInvoice helps you create and send beautiful invoices in minutes, so you get paid faster.
+                                Stop wrestling with spreadsheets. GenInvoice helps you create and send beautiful invoices in minutes, so you get paid faster.
                             </p>
                             <p>
                                 {/* Primary call to action */}
-                                <button className="btn btn-lg btn-warning fw-bold rounded-pill my-2 mx-1 px-5 py-3">
+                                <button onClick={handleActionButton} className="btn btn-lg btn-warning fw-bold rounded-pill my-2 mx-1 px-5 py-3">
                                     Generate Your First Invoice
                                 </button>
                                 {/* Secondary call to action */}
@@ -154,7 +154,7 @@ const LandingPage = () => {
             {/* Features Section: Highlights key benefits with images and text */}
             <section id="features" className="py-5">
                 <div className="container">
-                    <h2 className="text-center mb-5 display-5 fw-bold">Why Choose QuickInvoice?</h2>
+                    <h2 className="text-center mb-5 display-5 fw-bold">Why Choose GenInvoice?</h2>
                     {/* Feature 1 */}
                     <div className="row align-items-center gy-4">
                         <div className="col-md-6">
@@ -254,10 +254,10 @@ const LandingPage = () => {
                 <div className="container">
                     <h2 className="display-5 fw-bold mb-3">Ready to Streamline Your Invoicing?</h2>
                     <p className="lead mb-4 mx-auto" style={{ maxWidth: '600px' }}>
-                        Join thousands of freelancers and small businesses who trust QuickInvoice.
+                        Join thousands of freelancers and small businesses who trust GenInvoice.
                         Start creating professional invoices today – its fast, easy, and effective!
                     </p>
-                    <button className="btn btn-lg btn-warning fw-bold rounded-pill px-5 py-3" >
+                    <button className="btn btn-lg btn-warning fw-bold rounded-pill px-5 py-3" onClick={handleActionButton}>
                         Start Generating Invoices Now
                     </button>
                     <p className="mt-3 small">
@@ -270,9 +270,9 @@ const LandingPage = () => {
             <footer className="py-5 bg-dark text-white-50">
                 <div className="container text-center">
                     <Logo />
-                    <p className="text-white fw-bold mt-2">QuickInvoice</p>
+                    <p className="text-white fw-bold mt-2">GenInvoice</p>
                     <p className="mb-0">
-                        &copy; {new Date().getFullYear()} QuickInvoice. All Rights Reserved.
+                        &copy; {new Date().getFullYear()} GenInvoice. All Rights Reserved.
                     </p>
                     <p className="mb-0 small">
                         Crafted with <i className="bi bi-heart-fill text-danger"></i> for freelancers and small businesses.

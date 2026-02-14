@@ -1,24 +1,46 @@
-import { Link } from "react-router-dom";
-import Logo from "./Logo";
-import { SignedIn, SignedOut, useClerk, UserButton } from "@clerk/clerk-react";
+import { Link, useNavigate } from "react-router-dom";
+import { AppContext, initialInvoiceData } from "../context/AppContext.jsx";
+import { useContext } from "react";
+import Logo from "./Logo.jsx";
+import {
+  SignedIn,
+  SignedOut,
+  useClerk,
+  UserButton,
+  // useUser,
+} from "@clerk/clerk-react";
 
 const Menubar = () => {
+  const { setInvoiceData, setSelectedTemplate, setInvoiceTitle } =
+    useContext(AppContext);
+  const navigate = useNavigate();
   const { openSignIn } = useClerk();
+  const handleGenerateClick = () => {
+    // Reset context
+    setInvoiceData(initialInvoiceData);
+    setSelectedTemplate("template1");
+    setInvoiceTitle("Create Invoice");
+
+    navigate("/generate");
+  };
+
   const openLogin = () => {
     openSignIn({});
   };
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
       <div className="container py-2">
+        {/* Brand logo and name */}
         <Link className="navbar-brand d-flex align-items-center" to="/">
           <Logo />
           <span
             className="fw-bolder fs-4 mx-3"
-            style={{ letterSpacing: "-0.5px", color: "#0D6EFDB2 " }}
+            style={{ letterSpacing: "-0.5px", color: "#0D6EFDB2" }}
           >
-            QuickInvoice
+            GenInvoice
           </span>
         </Link>
+        {/* Navbar toggler for smaller screens */}
         <button
           className="navbar-toggler"
           type="button"
@@ -30,34 +52,37 @@ const Menubar = () => {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-
+        {/* Navbar links */}
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto align-items-center">
             <li className="nav-item">
-              <Link className="nav-link" to="/">
+              <Link className="nav-link fw-medium" to="/">
                 Home
               </Link>
             </li>
-            {/* To Show Only When User is Logged In */}
             <SignedIn>
               <li className="nav-item">
-                <Link className="nav-link" to="/dashboard">
+                <Link className="nav-link fw-medium" to="/dashboard">
                   Dashboard
                 </Link>
               </li>
               <li className="nav-item">
-                <button className="nav-link fw-medium">Generate</button>
+                <button
+                  className="nav-link fw-medium"
+                  onClick={handleGenerateClick}
+                >
+                  Generate
+                </button>
               </li>
               <UserButton />
             </SignedIn>
-            {/* this will hide when user logins */}
             <SignedOut>
-              <li className="nav-item">
+              <li className="nav-item ms-lg-3 mt-2 mt-lg-0 mb-2 mb-lg-0">
                 <button
-                  className="btn btn-primary rounded-pill px-4"
+                  className="btn btn-primary rounded-pill px-4 w-100" // add w-100
                   onClick={openLogin}
                 >
-                  Login/SignUp
+                  Login/Signup
                 </button>
               </li>
             </SignedOut>
@@ -67,4 +92,5 @@ const Menubar = () => {
     </nav>
   );
 };
+
 export default Menubar;

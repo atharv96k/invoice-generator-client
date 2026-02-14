@@ -1,23 +1,67 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Menubar from "./components/Menubar";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import MainPage from "./pages/MainPage.jsx";
+import PreviewPage from "./components/PreviewPage.jsx";
 import { Toaster } from "react-hot-toast";
-import PreviewPage from "./pages/PreviewPage";
-import MainPage from "./pages/MainPage";
-import LandingPage from "./pages/LandingPage/LandingPage";
-import Dashboard from "./pages/DashBoard";
+import DashBoard from "./pages/DashBoard.jsx";
+import Menubar from "./components/Menubar.jsx";
+import LandingPage from "./pages/LandingPage/LandingPage.jsx";
+import UserSyncHandler from "./components/UserSyncHandler.jsx";
+import { RedirectToSignIn, SignedIn, SignedOut } from "@clerk/clerk-react";
 
- const App = () => {
-      return (
-            <BrowserRouter>
-                <Menubar />
-                <Toaster />
-                <Routes>
-                    <Route path="/" element={<LandingPage />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/generate" element={<MainPage />} />
-                    <Route path="/preview" element={<PreviewPage />} />
-                </Routes>
-            </BrowserRouter>
-      )
-};
+function App() {
+  return (
+    <Router>
+      <UserSyncHandler />
+      <Menubar />
+      <Toaster />
+
+      <Routes>
+        {/* Public Route */}
+        <Route path="/" element={<LandingPage />} />
+
+        {/* Protected Routes - only show if signed in */}
+        <Route
+          path="/dashboard"
+          element={
+            <>
+              <SignedIn>
+                <DashBoard />
+              </SignedIn>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+            </>
+          }
+        />
+        <Route
+          path="/generate"
+          element={
+            <>
+              <SignedIn>
+                <MainPage />
+              </SignedIn>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+            </>
+          }
+        />
+        <Route
+          path="/preview"
+          element={
+            <>
+              <SignedIn>
+                <PreviewPage />
+              </SignedIn>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+            </>
+          }
+        />
+      </Routes>
+    </Router>
+  );
+}
+
 export default App;
