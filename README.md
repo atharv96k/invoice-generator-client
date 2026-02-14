@@ -1,6 +1,6 @@
-# QuickInvoice
+# GenInvoice
 
-QuickInvoice is a professional, full-stack React application designed to streamline the invoicing process for freelancers and small businesses. It allows users to effortlessly generate, preview, and manage invoices using a variety of professionally designed templates.
+GenInvoice is a professional, full-stack React application designed to streamline the invoicing process for freelancers and small businesses. It allows users to effortlessly generate, preview, and manage invoices using a variety of professionally designed templates.
 
 ## 🚀 Features
 
